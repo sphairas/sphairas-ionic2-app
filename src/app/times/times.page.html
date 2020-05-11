@@ -1,0 +1,71 @@
+<!-- <ion-split-pane contentId="details"> -->
+
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Tab 1
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+<!--   <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 12222222222</ion-title>
+    </ion-toolbar>
+  </ion-header> -->
+
+  <!--        <ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()">
+            </ion-refresher>-->
+  <!--    <h2>Welcome to Ionic!</h2> -->
+
+  <ion-list inset>
+
+    <ion-infinite-scroll position="top" (ionInfinite)="loadTop($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Frühere Stunden werden geladen...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+    <ion-item *ngIf="(service.times | async).size === 0">
+      Keine Stunden
+    </ion-item>
+    <ion-item *ngFor="let time of service.times | async" routerLink='/tabs/times/{{time.id}}' routerDirection="forward"
+      class="item-remove-animate item-avatar item-icon-right item-icon-left" type="item-text-wrap" id="{{time.id}}"
+      [style.color]="time.now ? 'blue' : null">
+<!--       <ion-avatar slot="start">
+        <img src="./avatar-finn.png">
+      </ion-avatar> -->
+      <ion-label>
+
+        <h2 style="font-size: 14pt">{{time | timeformat}}, {{time.period}}. Stunde
+          ({{time.start | amDateFormat: 'H:mm'}})
+        </h2>
+
+        <h5 [style.color]="blue" *ngIf="time.end || time.location">
+          {{!!time.end ? 'Ende ' : ''}}{{time.end | amDateFormat: 'H:mm'}}{{!!time.end ? ' / ' : ''}}{{!!time.location ? 'Raum ' : ''}}{{time.location}}
+        </h5>
+
+        <h2>{{time.summary}}</h2>
+
+        <ion-icon *ngIf="time.update" name="alert" item-left></ion-icon>
+        <h4 *ngIf="time.update" style="color: orangered">{{time.update.message}}</h4>
+        <h4 *ngIf="time.update && time.update.message2" style="color: orangered; font-style: italic">
+          {{time.update.message2}}</h4>
+        <h4 *ngIf="time.update && time.update.location" style="color: orangered">Der Unterricht findet in
+          {{time.update.location}} statt.</h4>
+      </ion-label>
+
+    </ion-item>
+
+    <!--     <ion-infinite-scroll position="bottom" threshold="5%" (ionInfinite)="loadBottom($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Spätere Stunden werden geladen...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll> -->
+
+  </ion-list>
+
+</ion-content>
+  <!-- the main content -->
+  <!-- <app-record2 id="details"></app-record2> -->
+  <!-- <ion-router-outlet id="details"></ion-router-outlet> -->
+<!-- </ion-split-pane>  -->

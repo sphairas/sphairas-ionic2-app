@@ -1,0 +1,20 @@
+page-records {
+
+    .records-list-header {
+        background: inherit;
+        text-align: center;
+        //font-variant: small-caps;
+        font-stretch: expanded;
+        font-size: 250%;
+    }
+
+/*     .item-input::after {
+        border-bottom-color: transparent !important;
+        } */
+
+    .item-inner {
+        border-bottom-color: transparent !important;
+        box-shadow: none !important;
+        }
+
+}

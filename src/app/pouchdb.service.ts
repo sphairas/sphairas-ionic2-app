@@ -1,0 +1,94 @@
+import { Injectable } from '@angular/core';
+//import { ReplaySubject } from 'rxjs/Rx';
+//import * as PouchDB from 'pouchdb';
+import PouchDB from 'pouchdb';
+import { ReplaySubject } from 'rxjs';
+import { AuthService } from './auth.service';
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PouchDBService {
+
+  public localDB: any;
+  private remoteDB: any;
+  private eventHandler: ReplaySubject<any> = new ReplaySubject(1);
+  private syncHandler: any;
+
+  public constructor(private authService: AuthService) {
+    this.localDB = new PouchDB("local", { auto_compaction: true });
+    this.localDB.info()
+      .then(function (info) {
+        console.info(info);
+      });
+    this.initRemoteDB();
+    this.authService.changes.subscribe(this.initRemoteDB);
+  }
+
+  private initRemoteDB() {
+    if (this.syncHandler) this.syncHandler.cancel();
+    if (this.remoteDB) this.remoteDB.close().then(console.log('Logged out'));
+    let settings: { database: string, login: string } = JSON.parse(localStorage.getItem('app-settings')) || {};
+    if (!settings.database) return;
+    this.remoteDB = new PouchDB(settings.database, {
+      skip_setup: true,
+      fetch: (url: any, opts: any) => {
+        let auth = localStorage.getItem('id_token');
+        if (auth) opts.headers.set('Authorization', `Bearer ${auth}`);
+        return PouchDB.fetch(url, opts);
+      }
+    })
+    this.syncHandler = this.localDB
+      .sync(this.remoteDB, {
+        live: true,
+        retry: true,
+        //                        filter: '_view',
+      })
+      .on('active', info => {
+        console.log(info);
+      })
+      .on('error', err => {
+        console.info('Sync error. ' + err);
+      })
+      .on('denied', err => {
+        console.info('Sync denied.' + err);
+        this.syncHandler.cancel();
+      })
+      .on('complete', info => {
+        // replication was canceled!
+        console.log(info);
+      })
+      .on('change', event => {
+        if (event.direction === 'pull') {
+          let e = {
+            type: 'change',
+            id: event.change
+          };
+          this.eventHandler.next(e);
+        }
+      });
+  }
+
+  public async find(doc: string, options?: any) {
+    return this.localDB.get(doc);
+  }
+
+  public async query(view: string, options?: any) {
+    //options causing weird problems....
+    return this.localDB.query(view, options);
+  }
+
+  public async change(doc: string, callback: (doc: any) => void, options?: any) {
+    return this.localDB.get(doc)
+      .then(d => {
+        callback(d);
+        return this.localDB.put(d);
+      })
+      .then(function (res) {
+        return res;
+      }).catch(function (err) {
+        console.log(err);
+      });
+  }
+}

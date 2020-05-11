@@ -24,3 +24,44 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.sphairas-text  {
+    
+        // padding-top: 10pt;
+    padding: 7px; // !important;
+    padding-left: 11px !important;  
+
+    border-style: solid; 
+    border-width: thin;
+    border-color:   grey;
+    border-radius: 5px !important;
+            // border-bottom-color: blueviolet;
+
+    box-shadow: none !important;
+                
+            /*text-decoration: none;*/
+                
+            // height: 1.2em;
+    resize: both;
+            // padding-left: 11px !important; 
+    margin-top: 10px;
+    margin-left: 0px;
+    margin-bottom: 7px;
+            
+    background-color: #ffe0c0; //#c0dfff;
+    color: black;
+            /*opacity: 0.7;*/
+    font-size: 110%;
+            // padding-top: 0px!important;
+
+    textarea {
+        resize: inherit;
+        margin: 0pt;
+    } 
+
+    textarea::placeholder {
+        color: grey;
+        font-style: italic;
+    }
+
+}

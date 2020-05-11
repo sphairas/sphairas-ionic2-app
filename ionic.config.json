@@ -1,5 +1,8 @@
 {
   "name": "sphairas-ionic5ng2-app",
-  "integrations": {},
+  "integrations": {
+    "cordova": {},
+    "capacitor": {}
+  },
   "type": "angular"
 }

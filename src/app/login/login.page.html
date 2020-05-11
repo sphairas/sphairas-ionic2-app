@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form">
+    <fieldset>
+      <legend>Server</legend>
+      <ion-item class="form-field">
+        <ion-label>Datenbank-URL:</ion-label>
+        <ion-input formControlName="database" type="url"></ion-input>
+      </ion-item>
+    </fieldset>
+    <fieldset>
+      <legend>Authentifizierung über IServ</legend>
+      <ion-item class="form-field">
+        <ion-label>IServ-Benutzerkennung:</ion-label>
+        <ion-input formControlName="login"></ion-input>
+      </ion-item>
+      <ion-item class="form-field">
+        <label>IServ-Passwort:</label>
+        <ion-input formControlName="password" type="password"></ion-input>
+      </ion-item>
+    </fieldset>
+    <ion-item class="form-buttons">
+      <ion-button class="button button-primary" (click)="login()">Login</ion-button>
+    </ion-item>
+  </form>`
+</ion-content>

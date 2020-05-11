@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { StudentRecordPageRoutingModule } from '../student-record/student-record-routing.module';
+import { TimesPageModule } from '../times/times.module';
 
 const routes: Routes = [
   {
@@ -8,12 +10,22 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'tab1',
+        path: 'times',
         children: [
           {
             path: '',
             loadChildren: () =>
-              import('../tab1/tab1.module').then(m => m.Tab1PageModule)
+              import('../times/times.module').then(m => m.TimesPageModule)
+          },
+          {
+            path: 'student-record',
+            loadChildren: () =>
+              import('../student-record/student-record-routing.module').then(m => m.StudentRecordPageRoutingModule)
+            // loadChildren: '../student-record/student-record-routing.module#StudentRecordPageRoutingModule' 
+          },
+          {
+            path: ':time',
+            loadChildren: '../times/times.module#TimesPageModule'
           }
         ]
       },
@@ -39,20 +51,20 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/tab1',
+        redirectTo: '/tabs/times',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/tab1',
+    redirectTo: '/tabs/times',
     pathMatch: 'full'
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(routes), TimesPageModule, StudentRecordPageRoutingModule],
   exports: [RouterModule]
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }
