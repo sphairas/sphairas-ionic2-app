@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Moment, unix, utc } from 'moment';
 import { Subject } from 'rxjs';
 import { shareReplay, tap } from "rxjs/operators";
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,7 @@ export class AuthService {
 
   public isLoggedIn() {
     const expiration: number = +localStorage.getItem("expires_at");
-    const expiresAt: Moment = unix(expiration);
+    const expiresAt: Moment = moment(expiration);
     return utc().isBefore(expiresAt);
   }
 
