@@ -6,7 +6,7 @@ import { PouchDBService } from '../pouchdb.service';
 import { TimesService } from '../times.service';
 
 @Component({
-  selector: 'app-tab1',
+  selector: 'app-times',
   templateUrl: 'times.page.html',
   styleUrls: ['times.page.scss'],
   providers: [PouchDBService]
@@ -31,5 +31,19 @@ export class TimesPage {
   }
 
   onSelect(time: Time): void {
+  }
+
+  loadTop(event) {
+    setTimeout(() => {
+      this.service.addDaysBefore(3);
+      event.target.complete();
+    }, 500);
+  }
+
+  loadBottom(event) {
+    setTimeout(() => {
+      this.service.addDaysAfter(3);
+      event.target.complete();
+    }, 500);
   }
 }
