@@ -2,11 +2,8 @@ import { Injectable } from '@angular/core';
 import { List } from 'immutable';
 import { Moment, utc } from 'moment';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
 import { PouchDBService } from './pouchdb.service';
 import { Time } from './time';
-
-export const pmdays: number = 100;
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +14,24 @@ export class TimesService {
 
   public start: Moment;
   public end: Moment;
+  private readonly daysDefault: number = 5;
+  private daysBefore: number = this.daysDefault;
+  private daysAfter: number = this.daysDefault;
 
   constructor(private db: PouchDBService) {
-    this.start = utc().startOf('day').subtract(pmdays, 'days');
-    this.end = utc().endOf('day').add(pmdays, 'days');
+    this.start = utc().startOf('day').subtract(this.daysBefore, 'days');
+    this.end = utc().endOf('day').add(this.daysAfter, 'days');
 
+    this.loadInitialData();
+  }
+
+  public addDaysBefore(num: number) {
+    this.daysBefore = this.daysBefore + num;
+    this.loadInitialData();
+  }
+
+  public addDaysAfter(num: number) {
+    this.daysAfter = this.daysAfter + num;
     this.loadInitialData();
   }
 
@@ -43,7 +53,7 @@ export class TimesService {
         for (let i = 0; i < res.rows.length; i++) {
           let id = res.rows[i].id;
           if (id.indexOf('rec:') === 0) {
-            let start = res.rows[i].key;
+            let start = res.rows[i].key.replace(/\D/g, '');
             if (start < s || start > e) continue;
             let rd = res.rows[i].doc;
             let end = rd.end;
@@ -53,12 +63,13 @@ export class TimesService {
               let ud = res.rows.find(r => r.key === unit).doc;
               text = ud ? ud.name : text;
             }
-            let t: Time = new Time(id, text, this);
+            let t: Time = new Time(id, text);
             t.unit = rd.unitDoc;
             t.start = utc(start, "YYYYMMDDHHmm");
             t.end = utc(end, "YYYYMMDDHHmm");
             t.period = rd.period;
             t.location = rd.location;
+            if (rd.journal) t.text = rd.journal.text;
             recs.push(t);
           }
         }
@@ -72,27 +83,13 @@ export class TimesService {
     return this._times.asObservable();
   }
 
-  async get(id: string): Promise<Time> {
-    let res: Observable<Time> = this.times
-      .pipe(
-        map(l => l.find(t => t.id === id)),
-        filter(Boolean),
-        // distinctUntilChanged(),
-        take(1)
-      );
-    //toPromise not working?
-    return new Promise<Time>((resolve, reject) => res.subscribe(
-      value => { if (value) resolve(value) },
-      error => reject(error)));
-  }
-
   async setTimeText(id: string, value: string) {
     return this.db.change(id, doc => {
       let j = {
         text: value,
         timestamp: Date.now()
       };
-      doc.journal = j;
+      if (!doc.journal || doc.journal.text !== value) doc.journal = j;
     });
   }
 

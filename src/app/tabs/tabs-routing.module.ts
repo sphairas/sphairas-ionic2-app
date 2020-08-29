@@ -15,16 +15,6 @@ const routes: Routes = [
             loadChildren: () =>
               import('../times/times.module').then(m => m.TimesPageModule)
           },
-          {
-            path: 'student-record',
-            loadChildren: () =>
-              import('../student-record/student-record-routing.module').then(m => m.StudentRecordPageRoutingModule)
-            // loadChildren: '../student-record/student-record-routing.module#StudentRecordPageRoutingModule' 
-          },
-          {
-            path: ':time',
-            loadChildren: '../times/times.module#TimesPageModule'
-          }
         ]
       },
       {

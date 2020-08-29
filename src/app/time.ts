@@ -1,8 +1,6 @@
 import { Input } from '@angular/core';
 import { Record } from 'immutable';
 import { Moment, utc } from 'moment';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
 import { TimesService } from './times.service';
 import { Update } from './updates.service';
 
@@ -16,24 +14,10 @@ export class Time {
     _period: number;
     _location: string;
     _text: string;
-    _lastText: string;
     unit: string;
     update: Update;
-    observeText: Subject<any>;
 
-    constructor(public readonly id: string, public readonly summary: string, private service: TimesService) {
-        this.observeText = new Subject<string>();
-        this.observeText
-            .pipe(debounceTime(200))
-            .subscribe(value => {
-                //console.log("Value entered: " + value);
-                service.setTimeText(id, value)
-                    .then()
-                    .catch(e => {
-                        this._text = this._lastText;
-                        console.log(e);
-                    });
-            });
+    constructor(public readonly id: string, public readonly summary: string) {
     }
 
     get start(): Moment {
@@ -83,9 +67,7 @@ export class Time {
 
     @Input()
     set text(value: string) {
-        this._lastText = this._text;
         this._text = value;
-        this.observeText.next(this._text);
     }
 
 }

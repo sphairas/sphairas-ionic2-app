@@ -7,7 +7,7 @@ import { StudentRecords } from './student-records';
 import { StudentRecordItem } from './student-records.item';
 import { student, studentFactory } from './time';
 import { TimesService } from './times.service';
-import { filter, take, map } from 'rxjs/operators';
+import { filter, take, map, distinctUntilChanged } from 'rxjs/operators';
 
 export let grades: Grade[] = [
   new Grade('minus-minus', ' --', true, 'remove-circle'),
@@ -49,7 +49,7 @@ export class RecordsService {
         for (let i = 0; i < res.rows.length; i++) {
           let id = res.rows[i].id;
           if (id.indexOf('rec:') === 0) {
-            let start = res.rows[i].key;
+            let start = res.rows[i].key.replace(/\D/g, '');
             if (start < s || start > e) continue;
             let rd = res.rows[i].doc;
             if (rd.unitDoc) {
@@ -64,7 +64,8 @@ export class RecordsService {
                 };
                 units[unit] = tu;
               }
-              let sr: StudentRecords = new StudentRecords(id, rd.unitDoc, tu.students, rd.records);
+              let records = rd.records || [];
+              let sr: StudentRecords = new StudentRecords(id, rd.unitDoc, tu.students, records);
               sr.convention = tu.convention;
               recs.push(sr);
             }
@@ -80,23 +81,25 @@ export class RecordsService {
     return this._records.asObservable();
   }
 
-  async get(time: string): Promise<StudentRecords> {
-    let res: Observable<StudentRecords> = this._records
+  get(time: string): Observable<StudentRecords> {
+    return <Observable<StudentRecords>>this._records
       .pipe(
         map(l => l.find(t => t.time === time)),
-        filter(Boolean),
-        // distinctUntilChanged(),
+        filter(x => x !== undefined),
+        distinctUntilChanged(),
         take(1)
       );
     //toPromise not working?
-    return new Promise<StudentRecords>((resolve, reject) => res.subscribe(
-      value => { if (value) resolve(value) },
-      error => reject(error)));
+    // return new Promise<StudentRecords>((resolve, reject) => res.subscribe(
+    //   value => { if (value) {
+    //   console.log("sdjflksdajflk " + value.size);
+    //   resolve(value) }},
+    //   error => reject(error)));
   }
 
   async setGrade(time: string, student: string, grade: string) {
     const cb = (doc: any): void => {
-      if (!doc.recorcds) doc.records = [];
+      if (!doc.records) doc.records = [];
       let i = 0;
       for (; i < doc.records.length; i++) {
         if (doc.records[i].student === student) {
@@ -107,15 +110,12 @@ export class RecordsService {
       }
       let record: any = {
         id: student,
-        grade: grade
+        grade: grade,
+        timestamp: Date.now()
       };
-      doc.records[i] = record;
+      doc.records.push(record);
     };
     return this.db.change(time, cb);
-  }
-
-  async getRecords(time: string): Promise<List<StudentRecordItem>> { //
-    return undefined;
   }
 
 }

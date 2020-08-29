@@ -10,7 +10,7 @@ import * as moment from 'moment';
 })
 export class AuthService {
 
-  public readonly changes: Subject<{}> = new Subject<{}>();
+  public readonly changes: Subject<{}> = new Subject<{ type: string }>();
 
   constructor(private http: HttpClient) {
   }
@@ -27,12 +27,15 @@ export class AuthService {
   private setSession(res) {
     localStorage.setItem('id_token', res.jwt);
     localStorage.setItem("expires_at", res.exp);
-    this.changes.next();
+    let change: { type: string } = { type: "login" }
+    this.changes.next(change);
   }
 
   logout() {
     localStorage.removeItem("id_token");
     localStorage.removeItem("expires_at");
+    let change: { type: string } = { type: "logout" }
+    this.changes.next(change);
   }
 
   public isLoggedIn() {

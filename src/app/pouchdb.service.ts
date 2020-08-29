@@ -23,7 +23,20 @@ export class PouchDBService {
         console.info(info);
       });
     this.initRemoteDB();
-    this.authService.changes.subscribe(this.initRemoteDB);
+    this.authService.changes.subscribe(this.onChange);
+  }
+
+  private onChange(change: { type: string }) {
+    switch (change.type) {
+      case 'login':
+        this.initRemoteDB();
+        break;
+      case 'logout':
+        if (this.syncHandler) this.syncHandler.cancel();
+        this.localDB.destroy()
+          .then(console.log('localDB destroyed.'))
+          .catch(e => console.log(e));
+    }
   }
 
   private initRemoteDB() {
@@ -53,7 +66,8 @@ export class PouchDBService {
       })
       .on('denied', err => {
         console.info('Sync denied.' + err);
-        this.syncHandler.cancel();
+        //Don't cancel! Syncing may be denied because of missing permissions, e. g. _design/times cannot be synced
+        //this.syncHandler.cancel();
       })
       .on('complete', info => {
         // replication was canceled!
