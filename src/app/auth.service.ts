@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Moment, unix, utc } from 'moment';
-import { Subject } from 'rxjs';
+import { Moment, utc } from 'moment';
+import { Subject, Observable } from 'rxjs';
 import { shareReplay, tap } from "rxjs/operators";
 import * as moment from 'moment';
+import { environment } from './../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +16,25 @@ export class AuthService {
   constructor(private http: HttpClient) {
   }
 
-  login(account: string, password: string) {
-    // return this.http.post<{ jwt: string, exp: number }>('/api/login', { account, password, realm: 'iserv' })
-    return this.http.post<{ jwt: string, exp: number }>('http://localhost:8080/sphairas-login/login', { account, password, realm: 'iserv' })
+  options(server: string): Observable<any[]> {
+    if(environment.login_server) server = environment.login_server;
+    let href = server + '/sphairas-login/options';
+    let key: string = environment.login_key;
+    let options = {
+      params: {
+        "login_key": key
+      }
+    };
+    return this.http.get<any[]>(href, options)
+      .pipe(
+        shareReplay()
+      );
+  }
+
+  login(server: string, account: string, password: string) {
+    if(environment.login_server) server = environment.login_server;
+    let href = server + '/sphairas-login/login';
+    return this.http.post<{ db: string, api: string, jwt: string, exp: number }>(href, { account, password })
       .pipe(
         tap(res => this.setSession(res)),
         shareReplay()

@@ -42,9 +42,9 @@ export class PouchDBService {
   private initRemoteDB() {
     if (this.syncHandler) this.syncHandler.cancel();
     if (this.remoteDB) this.remoteDB.close().then(console.log('Logged out'));
-    let settings: { database: string, login: string } = JSON.parse(localStorage.getItem('app-settings')) || {};
-    if (!settings.database) return;
-    this.remoteDB = new PouchDB(settings.database, {
+    let settings: { db: string, api: string, account: string } = JSON.parse(localStorage.getItem('app-settings')) || {};
+    if (!settings.db) return;
+    this.remoteDB = new PouchDB(settings.db, {
       skip_setup: true,
       fetch: (url: any, opts: any) => {
         let auth = localStorage.getItem('id_token');

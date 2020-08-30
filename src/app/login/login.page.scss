@@ -1,0 +1,10 @@
+#urlinput {
+    
+    span {
+        padding-inline-start: var(--padding-start);
+    }
+    
+    ion-input {
+        --padding-start: 0;
+    }
+}
