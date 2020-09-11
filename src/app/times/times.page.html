@@ -41,9 +41,9 @@
           ({{time.start | amDateFormat: 'H:mm'}})
         </h2>
 
-        <h5 [style.color]="blue" *ngIf="time.end || time.location">
+        <h5 [style.color]="'blue'" *ngIf="time.end || time.location">
           {{!!time.end ? 'Ende ' : ''}}{{time.end | amDateFormat: 'H:mm'}}{{!!time.end ? ' / ' : ''}}{{!!time.location ? 'Raum ' : ''}}{{time.location}}
-        </h5>
+        </h5> 
 
         <h2>{{time.summary}}</h2>
 
