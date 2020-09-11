@@ -18,7 +18,7 @@ export class TimesPage {
   start: any;
   end: any;
 
-  constructor(private service: TimesService, private updates: UpdatesService) { }
+  constructor(public service: TimesService, private updates: UpdatesService) { }
 
   ngOnDestroy() {
     this.subscription.dispose();

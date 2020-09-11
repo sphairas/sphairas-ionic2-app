@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
 
-const urlPattern = '[\da-z]+([.-]?[\da-z]+)*\.[a-z]{2,63}';
+const urlPattern = '[\da-z]+([.-]?[\da-z]+)*\\.[a-z]{2,63}';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +12,7 @@ const urlPattern = '[\da-z]+([.-]?[\da-z]+)*\.[a-z]{2,63}';
 })
 export class LoginPage implements OnInit {
 
-  serverName: string = undefined;
+  serverName: string = undefined;  
   passwordForm: FormGroup;
   return: string = '';
   serverNameForm: FormControl;

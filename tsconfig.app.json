@@ -4,7 +4,7 @@
     "outDir": "./out-tsc/app",
     "types": [],
     //https://pouchdb.com/guides/setup-pouchdb.html
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*.ts"

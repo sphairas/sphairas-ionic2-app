@@ -5,13 +5,13 @@ import { StudentRecordPageModule } from './student-record.module';
 
 const routes: Routes = [
   {
-    path: '', 
+    path: '',
     component: StudentRecordPage
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes),StudentRecordPageModule],
+  imports: [RouterModule.forChild(routes), StudentRecordPageModule],
   exports: [RouterModule],
 })
-export class StudentRecordPageRoutingModule {}
+export class StudentRecordPageRoutingModule { }

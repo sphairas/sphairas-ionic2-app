@@ -1,7 +1,6 @@
 import { Input } from '@angular/core';
 import { Record } from 'immutable';
 import { Moment, utc } from 'moment';
-import { TimesService } from './times.service';
 import { Update } from './updates.service';
 
 export type student = { id: string, name: string };
