@@ -13,20 +13,20 @@ export class PouchDBService {
 
   public localDB: any;
   private remoteDB: any;
-  private eventHandler: ReplaySubject<any> = new ReplaySubject(1);
+  public readonly eventHandler: ReplaySubject<any> = new ReplaySubject(1);
   private syncHandler: any;
 
-  public constructor(private authService: AuthService) {
+  public constructor() {
     this.localDB = new PouchDB("local", { auto_compaction: true });
     this.localDB.info()
       .then(function (info) {
         console.info(info);
       });
     this.initRemoteDB();
-    this.authService.changes.subscribe(this.onChange);
+    //this.authService.changes.subscribe(e => this.onChange(e)); Not working, this service might be initialized after AuthService
   }
 
-  private onChange(change: { type: string }) {
+  authChange(change: { type: string }) {
     switch (change.type) {
       case 'login':
         this.initRemoteDB();
