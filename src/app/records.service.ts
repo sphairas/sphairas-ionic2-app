@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Grade } from './grade';
 import { PouchDBService } from './pouchdb.service';
 import { StudentRecords } from './student-records';
-import { StudentRecordItem } from './student-records.item';
 import { student, studentFactory } from './time';
 import { TimesService } from './times.service';
 import { filter, take, map, distinctUntilChanged } from 'rxjs/operators';
@@ -64,7 +63,7 @@ export class RecordsService {
                 };
                 units[unit] = tu;
               }
-              let records = rd.records || [];
+              let records: { student: string, grade: string, timestamp: number }[] = rd.records || [];
               let sr: StudentRecords = new StudentRecords(id, rd.unitDoc, tu.students, records);
               sr.convention = tu.convention;
               recs.push(sr);
@@ -77,9 +76,9 @@ export class RecordsService {
       .catch(err => console.log(err));
   }
 
-  get records(): Observable<List<StudentRecords>> {
-    return this._records.asObservable();
-  }
+  // get records(): Observable<List<StudentRecords>> {
+  //   return this._records.asObservable();
+  // }
 
   get(time: string): Observable<StudentRecords> {
     return <Observable<StudentRecords>>this._records
@@ -102,20 +101,25 @@ export class RecordsService {
       if (!doc.records) doc.records = [];
       let i = 0;
       for (; i < doc.records.length; i++) {
-        if (doc.records[i].student === student) {
-          doc.records[i].grade = grade;
-          doc.records[i].timestamp = Date.now();
+        let record: { student: string, grade: string, timestamp: number } = doc.records[i];
+        if (record.student === student) {
+          record.grade = grade;
+          record.timestamp = Date.now();
           return;
         }
       }
-      let record: any = {
-        id: student,
+      let record: { student: string, grade: string, timestamp: number } = {
+        student: student,
         grade: grade,
         timestamp: Date.now()
       };
       doc.records.push(record);
     };
-    return this.db.change(time, cb);
+    return this.db.change(time, cb)
+    .then(res => {
+      this.loadInitialData();
+      return res;
+    });
   }
 
 }

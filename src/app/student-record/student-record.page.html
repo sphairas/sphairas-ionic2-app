@@ -33,16 +33,16 @@
     <form [formGroup]="gradeForm">
       <ion-item>
         <ion-label fixed>Anwesend</ion-label>
-        <ion-toggle item-start formControlName="present" (click)="onSubmitGrade()"></ion-toggle>
+        <ion-toggle item-start formControlName="present" (ionChange)="onSubmitGrade()"></ion-toggle>
       </ion-item>
       <ion-item *ngIf="!gradeForm.value.present">
         <ion-label>Abwesenheit entschuldigt</ion-label>
-        <ion-checkbox item-start formControlName="excuse" (click)="onSubmitGrade()"></ion-checkbox>
+        <ion-checkbox item-start formControlName="excuse" (ionChange)="onSubmitGrade()"></ion-checkbox>
       </ion-item>
       <ion-item *ngIf="gradeForm.value.present">
         <!-- style="padding-top: 20pt"  -->
         <!--<ion-label>Mitarbeit</ion-label>-->
-        <ion-segment formControlName="grade" (click)="onSubmitGrade()">
+        <ion-segment scrollable formControlName="grade" (ionChange)="onSubmitGrade()">
           <ion-segment-button *ngFor="let gv of grades" value="{{gv.value}}" [hidden]="!gv.evaluative">
             <!--<ion-item style="font-size: 20pt" text-center>{{gv.display}}</ion-item>-->
             <ion-icon name="{{gv.icon}}"></ion-icon>

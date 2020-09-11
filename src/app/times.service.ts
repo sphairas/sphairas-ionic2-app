@@ -23,6 +23,7 @@ export class TimesService {
     this.end = utc().endOf('day').add(this.daysAfter, 'days');
 
     this.loadInitialData();
+    this.db.eventHandler.subscribe(e => this.loadInitialData());
   }
 
   public addDaysBefore(num: number) {
@@ -48,7 +49,6 @@ export class TimesService {
     this.db.query('times/times-targets', options)
       .then(res => {
         let recs: Time[] = [];
-        let units: string[] = [];
         //TODO: load cfg:default
         for (let i = 0; i < res.rows.length; i++) {
           let id = res.rows[i].id;
@@ -90,6 +90,10 @@ export class TimesService {
         timestamp: Date.now()
       };
       if (!doc.journal || doc.journal.text !== value) doc.journal = j;
+    })
+    .then(res => {
+      this.loadInitialData();
+      return res;
     });
   }
 
