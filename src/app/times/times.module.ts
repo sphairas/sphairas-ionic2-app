@@ -6,9 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { MomentModule } from 'ngx-moment';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 import { PipesModule } from '../pipes/pipes.module';
-import { RecordPage } from './record.page';
 import { TimesPage } from './times.page';
-
 
 @NgModule({
   imports: [
@@ -24,18 +22,14 @@ import { TimesPage } from './times.page';
       },
       {
         path: ':time',
-        component: RecordPage
-      },
-      {
-        path: ':time/:student',
         loadChildren: () =>
-          import('../student-record/student-record-routing.module').then(m => m.StudentRecordPageRoutingModule)
+          import('../time-records/time-records.module').then(m => m.TimeRecordsModule)
       }
     ]),
     PipesModule,
     MomentModule,
     // StudentRecordPageRoutingModule
   ],
-  declarations: [TimesPage, RecordPage]
+  declarations: [TimesPage]
 })
 export class TimesPageModule { }

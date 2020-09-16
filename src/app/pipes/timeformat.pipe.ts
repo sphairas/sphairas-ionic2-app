@@ -9,7 +9,7 @@ export class TimeformatPipe implements PipeTransform {
 
   transform(value: Time): string {
     let ref: Moment = utc();
-    if (!value.start) return '---';
+    if (!value || !value.start) return '---';
     let diff: number = value.start.diff(ref, 'second');
     if (ref.isAfter(value.start, 'second') && value.end && value.end.isAfter(ref, 'second')) { //
       return 'Jetzt';

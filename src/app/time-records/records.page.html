@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{time | async | timeformat}}, {{(time | async)?.period}}. St., {{(time | async)?.summary}}</ion-title>
+    <ion-title>{{time | timeformat}}, {{time?.period}}. St., {{time?.text}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -19,7 +19,7 @@
       </ion-label>
     </ion-item-divider>
 
-    <ion-item *ngFor="let record of items | async; let i = index" (click)="onSelect(record, i)">
+    <ion-item *ngFor="let record of items | async" (click)="onSelect(record)">
       <ion-label>
         <h2>{{record.name}}</h2>
       </ion-label>

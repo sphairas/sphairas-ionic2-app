@@ -26,10 +26,10 @@
       </ion-infinite-scroll-content>
     </ion-infinite-scroll>
 
-    <ion-item *ngIf="(service.times | async).size === 0">
+    <ion-item *ngIf="(times | async).size === 0">
       Keine Stunden
     </ion-item>
-    <ion-item *ngFor="let time of service.times | async" routerLink='/tabs/times/{{time.id}}' routerDirection="forward"
+    <ion-item *ngFor="let time of times | async" routerLink='/tabs/times/{{time.id}}' routerDirection="forward"
       class="item-remove-animate item-avatar item-icon-right item-icon-left" type="item-text-wrap" id="{{time.id}}"
       [style.color]="time.now ? 'blue' : null">
       <!--       <ion-avatar slot="start">
@@ -45,7 +45,7 @@
           {{!!time.end ? 'Ende ' : ''}}{{time.end | amDateFormat: 'H:mm'}}{{!!time.end ? ' / ' : ''}}{{!!time.location ? 'Raum ' : ''}}{{time.location}}
         </h5> 
 
-        <h2>{{time.summary}}</h2>
+        <h2>{{time.text}}</h2>
 
         <ion-icon *ngIf="time.update" name="alert" item-left></ion-icon>
         <h4 *ngIf="time.update" style="color: orangered">{{time.update.message}}</h4>

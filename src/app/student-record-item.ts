@@ -6,9 +6,9 @@ export class StudentRecordItem {
     present: boolean = true;
     excuse: boolean = false;
     notes: RecordNote[] = [];
-    nextStudent: string;
+    timestamp: number;
 
-    constructor(public readonly student: string, public readonly name: string) {
+    constructor(public readonly student: string, private _name?: string) {
     }
 
     static evaluate({ grade, present, excuse }: { grade: string; present: boolean; excuse: boolean; }): string {
@@ -25,6 +25,14 @@ export class StudentRecordItem {
             this.excuse = this.grade === 'e';
         }
         else this.grade = 'x';
+    }
+
+    get name(): string {
+        return this._name || this.student;
+    }
+
+    set name(value: string) {
+        this._name = value;
     }
 
 }

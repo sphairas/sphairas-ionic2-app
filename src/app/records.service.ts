@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
-import { List, Record } from 'immutable';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Grade } from './grade';
 import { PouchDBService } from './pouchdb.service';
-import { StudentRecords } from './student-records';
-import { student, studentFactory } from './time';
-import { TimesService } from './times.service';
-import { filter, take, map, distinctUntilChanged } from 'rxjs/operators';
+import { TimeRecords } from './time-records';
+import { StudentRecordItem } from './student-record-item';
 
 export let grades: Grade[] = [
   new Grade('minus-minus', ' --', true, 'remove-circle'),
@@ -24,79 +21,73 @@ export let grades: Grade[] = [
 })
 export class RecordsService {
 
-  private _records: BehaviorSubject<List<StudentRecords>> = new BehaviorSubject(List([]));
 
-  constructor(private times: TimesService, private db: PouchDBService) {
-    this.loadInitialData();
+  constructor(private db: PouchDBService) {
   }
 
-  loadInitialData() {
-    let s = this.times.start.format('YYYYMMDDHHmm');
-    let e = this.times.end.format('YYYYMMDDHHmm');
-    //startkey, endkey will skip 'doc:' and 'cfg:'
+  timeRecord(recordId: string): Observable<TimeRecords> {
+    let k = recordId.substring(4).replace(/\D/g, '');
     let options = {
       include_docs: true,
       attachments: false,
-      // startkey: s,
-      // endkey: e
+      key: k
     };
-    this.db.query('times/times-targets', options)
+    let ret: Subject<TimeRecords> = new Subject();
+    this.db.query('times/times-times', options)
       .then(res => {
-        let recs: StudentRecords[] = [];
-        let units: any[] = [];
         //TODO: load cfg:default
-        for (let i = 0; i < res.rows.length; i++) {
-          let id = res.rows[i].id;
-          if (id.indexOf('rec:') === 0) {
-            let start = res.rows[i].key.replace(/\D/g, '');
-            if (start < s || start > e) continue;
-            let rd = res.rows[i].doc;
-            if (rd.unitDoc) {
-              let tu = units[rd.unitDoc];
-              if (!tu) {
-                let unit = rd.unitDoc;
-                let ud = res.rows.find(r => r.key === unit).doc;
-                let studs: Record<student>[] = ud.students.map(s => studentFactory(s));;
-                tu = {
-                  students: List(studs),
-                  convention: ud.convention
-                };
-                units[unit] = tu;
-              }
-              let records: { student: string, grade: string, timestamp: number }[] = rd.records || [];
-              let sr: StudentRecords = new StudentRecords(id, rd.unitDoc, tu.students, records);
-              sr.convention = tu.convention;
-              recs.push(sr);
-            }
+        let recs: TimeRecords[] = res.rows.map(r => {
+          let ret: TimeRecords = new TimeRecords(r.id, r);
+          if (r.doc) {
+            ret.journal = r.doc.journal;
+            if (r.doc.records) ret.records = r.doc.records.map(r => {
+              let sr = new StudentRecordItem(r.student);
+              sr.setGrade(r.grade);
+              sr.timestamp = r.timestamp;
+              return sr;
+            });
           }
-        }
+          return ret;
+        });
         return recs;
       })
-      .then(recs => this._records.next(List(recs)))
+      .then(async res => {
+        const res0: any = await this.db.query('times/times-unitstudents', { attachments: false });
+        res.forEach(tr => {
+          let ud = res0.rows.find(r => r.id === tr.unit);
+          if (ud) {
+            tr.text = ud.value.name;
+            ud.value.students.forEach(stud => {
+              let sri: StudentRecordItem = tr.records.find(i => i.student === stud.id);
+              if (!sri) {
+                sri = new StudentRecordItem(stud.id, stud.name);
+                tr.records.push(sri);
+              } else {
+                sri.name = stud.name;
+              }
+            });
+          }
+        });
+        return res;
+      })
+      .then(records => {
+        if (records.length === 1) ret.next(records[0]);
+      })
       .catch(err => console.log(err));
+    return ret;
   }
 
-  // get records(): Observable<List<StudentRecords>> {
-  //   return this._records.asObservable();
-  // }
-
-  get(time: string): Observable<StudentRecords> {
-    return <Observable<StudentRecords>>this._records
-      .pipe(
-        map(l => l.find(t => t.time === time)),
-        filter(x => x !== undefined),
-        distinctUntilChanged(),
-        take(1)
-      );
-    //toPromise not working?
-    // return new Promise<StudentRecords>((resolve, reject) => res.subscribe(
-    //   value => { if (value) {
-    //   console.log("sdjflksdajflk " + value.size);
-    //   resolve(value) }},
-    //   error => reject(error)));
+  async setTimeJournalText(id: string, value: string) {
+    return this.db.change(id, doc => {
+      let j = {
+        text: value,
+        timestamp: Date.now()
+      };
+      if (!doc.journal || doc.journal.text !== value) doc.journal = j;
+    });
   }
 
-  async setGrade(time: string, student: string, grade: string) {
+  async setStudentGrade(time: string, student: string, grade: string) {
     const cb = (doc: any): void => {
       if (!doc.records) doc.records = [];
       let i = 0;
@@ -115,11 +106,6 @@ export class RecordsService {
       };
       doc.records.push(record);
     };
-    return this.db.change(time, cb)
-    .then(res => {
-      this.loadInitialData();
-      return res;
-    });
+    return this.db.change(time, cb);
   }
-
 }

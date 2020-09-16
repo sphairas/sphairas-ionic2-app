@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-
 import { Time } from '../time';
-import { UpdatesService } from '../updates.service';
 import { PouchDBService } from '../pouchdb.service';
 import { TimesService } from '../times.service';
+import { Observable } from 'rxjs';
+import { List } from 'immutable';
 
 @Component({
   selector: 'app-times',
@@ -13,24 +13,18 @@ import { TimesService } from '../times.service';
 })
 export class TimesPage {
 
-  // times: Time[] = [];
-  subscription: any;
+  times: Observable<List<Time>>;
   start: any;
   end: any;
 
-  constructor(public service: TimesService, private updates: UpdatesService) { }
-
-  ngOnDestroy() {
-    this.subscription.dispose();
-  }
+  constructor(public service: TimesService) { }
 
   ngOnInit(): void {
+    this.times = this.service.times;
   }
 
-  ionViewDidEnter(): void {
-  }
-
-  onSelect(time: Time): void {
+  ngOnDestroy() {
+    //if(this.times) this.times.unsubscribe();
   }
 
   loadTop(event) {

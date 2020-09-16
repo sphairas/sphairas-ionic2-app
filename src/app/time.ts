@@ -1,4 +1,3 @@
-import { Input } from '@angular/core';
 import { Record } from 'immutable';
 import { Moment, utc } from 'moment';
 import { Update } from './updates.service';
@@ -14,9 +13,18 @@ export class Time {
     _location: string;
     _text: string;
     unit: string;
-    update: Update;
+    update: Update;  
 
-    constructor(public readonly id: string, public readonly summary: string) {
+    constructor(public readonly id: string, row?: any) {
+        if (row) {
+            let start = row.key.replace(/\D/g, '');
+            let end = row.value.end;
+            this.unit = row.value.unitDoc;
+            this.start = utc(start, "YYYYMMDDHHmm");
+            this.end = utc(end, "YYYYMMDDHHmm");
+            this.period = row.value.period;
+            this.location = row.value.location;
+        }
     }
 
     get start(): Moment {
@@ -64,7 +72,6 @@ export class Time {
         return this._text;
     }
 
-    @Input()
     set text(value: string) {
         this._text = value;
     }

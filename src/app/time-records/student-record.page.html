@@ -7,15 +7,15 @@
 
     <ion-buttons slot="start">
       <!--style="padding-right: 50pt"-->
-      <button ion-button icon-only (click)="times()">
-        <ion-icon name="calendar"></ion-icon>
-      </button>
+      <ion-button icon-only (click)="times()">
+        <ion-icon slot="icon-only" name="calendar"></ion-icon>
+      </ion-button>
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <button ion-button icon-only (click)="next()">
-        <ion-icon name="arrow-forward"></ion-icon>
-      </button>
+      <ion-button icon-only fill="clear" (click)="next()">
+        <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+      </ion-button>
     </ion-buttons>
 
   </ion-toolbar>
@@ -25,8 +25,8 @@
   <ion-card>
     <ion-card-header>
       <div style="text-align: center">
-        <h3 title>{{(time | async)?.summary}}</h3>
-        <h3 title>{{time | async | timeformat}}, {{(time | async)?.period}}. Stunde</h3>
+        <h3 title>{{time?.text}}</h3>
+        <h3 title>{{time | timeformat}}, {{time?.period}}. Stunde</h3>
         <h2 title>{{(record | async)?.name}}</h2>
       </div>
     </ion-card-header>
@@ -52,10 +52,10 @@
     </form>
 
     <ion-item>
-      <button ion-button item-right icon-start round color="light" (click)="addNote()">
+      <ion-button item-right icon-start round color="light" (click)="addNote()">
         <ion-icon name="create"></ion-icon>
         <label style="padding-left: 5px;">Notiz</label>
-      </button>
+      </ion-button>
     </ion-item>
 
   </ion-card>
