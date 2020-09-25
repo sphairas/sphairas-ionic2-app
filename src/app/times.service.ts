@@ -3,7 +3,7 @@ import { List } from 'immutable';
 import { Moment, utc } from 'moment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PouchDBService } from './pouchdb.service';
-import { Time } from './time';
+import { Time } from './types/time';
 
 @Injectable({
   providedIn: 'root'

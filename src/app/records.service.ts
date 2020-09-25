@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Grade } from './grade';
+import { Grade } from './types/grade';
 import { PouchDBService } from './pouchdb.service';
 import { TimeRecords } from './time-records';
-import { StudentRecordItem } from './student-record-item';
+import { StudentRecordItem } from './types/student-record-item';
 
 export let grades: Grade[] = [
   new Grade('minus-minus', ' --', true, 'remove-circle'),

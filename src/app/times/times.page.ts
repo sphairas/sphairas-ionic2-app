@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Time } from '../time';
+import { Time } from '../types/time';
 import { PouchDBService } from '../pouchdb.service';
 import { TimesService } from '../times.service';
 import { Observable } from 'rxjs';

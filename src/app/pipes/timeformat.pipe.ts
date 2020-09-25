@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Time } from '../time';
+import { Time } from '../types/time';
 import { Moment, utc } from 'moment';
 
 @Pipe({

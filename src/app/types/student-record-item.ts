@@ -1,4 +1,4 @@
-import { RecordNote } from './times/recordNote';
+import { RecordNote } from '../times/recordNote';
 
 export class StudentRecordItem {
 

@@ -1,5 +1,5 @@
-import { Time } from './time';
-import { StudentRecordItem } from './student-record-item';
+import { Time } from './types/time';
+import { StudentRecordItem } from './types/student-record-item';
 
 export class TimeRecords extends Time {
   

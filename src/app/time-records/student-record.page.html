@@ -25,8 +25,11 @@
   <ion-card>
     <ion-card-header>
       <div style="text-align: center">
-        <h3 title>{{time?.text}}</h3>
-        <h3 title>{{time | timeformat}}, {{time?.period}}. Stunde</h3>
+        <ng-container *ngIf="_time | async as time; else loading">
+          <h3 title>{{time.text}}</h3>
+          <h3 title>{{time | timeformat}}, {{time.period}}. Stunde</h3>
+        </ng-container>
+        <ng-template #loading>Warte...</ng-template>
         <h2 title>{{(record | async)?.name}}</h2>
       </div>
     </ion-card-header>

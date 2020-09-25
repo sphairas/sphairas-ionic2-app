@@ -1,6 +1,6 @@
 import { Record } from 'immutable';
 import { Moment, utc } from 'moment';
-import { Update } from './updates.service';
+import { Update } from '../updates.service';
 
 export type student = { id: string, name: string };
 export const studentFactory: Record.Factory<student> = Record<student>({ id: 'student', name: 'Schülerin/Schüler' })

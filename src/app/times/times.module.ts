@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { MomentModule } from 'ngx-moment';
-import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 import { PipesModule } from '../pipes/pipes.module';
 import { TimesPage } from './times.page';
 
@@ -14,7 +13,6 @@ import { TimesPage } from './times.page';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ExploreContainerComponentModule,
     RouterModule.forChild([
       {
         path: '',

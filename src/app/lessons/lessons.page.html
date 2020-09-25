@@ -1,0 +1,21 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Unterricht
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-list>
+
+    <ion-item *ngIf="(lessons | async)?.size === 0 || true">
+      Kein Unterricht
+    </ion-item>
+    <ion-item *ngFor="let lesson of lessons | async" routerLink='/tabs/lessons/{{lesson.id}}' routerDirection="forward">
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

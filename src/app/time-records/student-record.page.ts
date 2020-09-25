@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { StudentRecordItem } from '../student-record-item';
-import { Observable } from 'rxjs';
+import { StudentRecordItem } from '../types/student-record-item';
+import { Observable, Subject } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { grades, RecordsService } from '../records.service';
-import { Grade } from '../grade';
-import { Time } from '../time';
+import { Grade } from '../types/grade';
+import { Time } from '../types/time';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
@@ -17,7 +17,7 @@ export class StudentRecordPage implements OnInit { //, OnChanges
 
   private tid: string; //Time ID
   private sid: string; //Student ID
-  time: Time;
+  _time: Subject<Time> = new Subject();
   record: Observable<StudentRecordItem>;
   nextStudent: string;
 
@@ -40,8 +40,9 @@ export class StudentRecordPage implements OnInit { //, OnChanges
     this.record = this.service.timeRecord(this.tid)
       .pipe(
         take(1),
-        tap(t => this.time = t),
+        tap(t => this._time.next(t)),
         map(t => {
+          t.records.sort((s1, s2) => s1.name.localeCompare(s2.name));
           let i = t.records.findIndex(r => r.student === this.sid)
           let ret = t.records[i];
           if (i + 1 < t.records.length) this.nextStudent = t.records[i + 1].student;

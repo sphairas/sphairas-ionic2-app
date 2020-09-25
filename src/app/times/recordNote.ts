@@ -1,6 +1,6 @@
 import { Input } from '@angular/core';
 
-import { StudentRecordItem } from '../student-record-item';
+import { StudentRecordItem } from '../types/student-record-item';
 
 // import { Camera } from 'ionic-native';
 import { Subject } from 'rxjs';

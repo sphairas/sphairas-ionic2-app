@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StudentRecordItem } from '../student-record-item';
-import { Time } from '../time';
+import { StudentRecordItem } from '../types/student-record-item';
+import { Time } from '../types/time';
 import { Observable, Subscription } from 'rxjs';
 import { map, filter, take, tap, debounceTime } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
