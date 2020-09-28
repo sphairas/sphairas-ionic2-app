@@ -10,6 +10,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { HttpClientModule } from '@angular/common/http';
+//added by angular-mat
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatIconModule } from '@angular/material/icon/';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,8 +21,10 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
+    BrowserAnimationsModule,
     // import HttpClientModule after BrowserModule.
     HttpClientModule,
+    MatIconModule
   ],
   providers: [
     StatusBar,

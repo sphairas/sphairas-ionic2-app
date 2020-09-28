@@ -3,10 +3,11 @@ import { StudentRecordItem } from '../types/student-record-item';
 import { Observable, Subject } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
-import { grades, RecordsService } from '../records.service';
+import { RecordsService } from '../records.service';
 import { Grade } from '../types/grade';
 import { Time } from '../types/time';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ConventionsService } from '../conventions.service';
 
 @Component({
   selector: 'app-student-record',
@@ -18,8 +19,10 @@ export class StudentRecordPage implements OnInit { //, OnChanges
   private tid: string; //Time ID
   private sid: string; //Student ID
   _time: Subject<Time> = new Subject();
-  record: Observable<StudentRecordItem>;
+  _record: Observable<StudentRecordItem>;
   nextStudent: string;
+
+  grades: Grade[];
 
   gradeForm = new FormGroup({
     present: new FormControl(true),
@@ -27,17 +30,14 @@ export class StudentRecordPage implements OnInit { //, OnChanges
     grade: new FormControl()
   });
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService) {
-  }
-
-  get grades(): Grade[] {
-    return grades;
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService, private conventionsService: ConventionsService) {
+    this.grades = this.conventionsService.grades();
   }
 
   ngOnInit() {
     this.tid = this.activatedRoute.snapshot.paramMap.get('time');
     this.sid = this.activatedRoute.snapshot.paramMap.get('student');
-    this.record = this.service.timeRecord(this.tid)
+    this._record = this.service.timeRecord(this.tid)
       .pipe(
         take(1),
         tap(t => this._time.next(t)),
@@ -50,22 +50,6 @@ export class StudentRecordPage implements OnInit { //, OnChanges
         }),
         tap(i => { if (i) this.gradeForm.patchValue(i) })
       );
-
-    // this.time = <Observable<Time>>this.timesService.times
-    //   .pipe(
-    //     map(l => l.find(t => t.id === this.tid)),
-    //     filter(Boolean),
-    //     // distinctUntilChanged(),
-    //     take(1)
-    //   );
-    // this.record = <Observable<StudentRecordItem>>this.service.get(this.tid)
-    //   .pipe(
-    //     flatMap(sr => sr.items),
-    //     map(l => l.find(t => t.student === this.sid)),
-    //     filter(Boolean),
-    //     take(1),
-    //     tap(i => this.gradeForm.patchValue(i))
-    //   );
   }
 
   onSubmitGrade() {

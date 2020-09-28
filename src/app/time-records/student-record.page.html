@@ -33,6 +33,7 @@
         <h2 title>{{(record | async)?.name}}</h2>
       </div>
     </ion-card-header>
+
     <form [formGroup]="gradeForm">
       <ion-item>
         <ion-label fixed>Anwesend</ion-label>
@@ -46,9 +47,11 @@
         <!-- style="padding-top: 20pt"  -->
         <!--<ion-label>Mitarbeit</ion-label>-->
         <ion-segment scrollable formControlName="grade" (ionChange)="onSubmitGrade()">
-          <ion-segment-button *ngFor="let gv of grades" value="{{gv.value}}" [hidden]="!gv.evaluative">
-            <!--<ion-item style="font-size: 20pt" text-center>{{gv.display}}</ion-item>-->
-            <ion-icon name="{{gv.icon}}"></ion-icon>
+          <ion-segment-button *ngFor="let g of grades" value="{{g.value}}">
+            <mat-icon *ngIf="g.icon; else noIcon" svgIcon="{{g.icon}}"></mat-icon>
+            <ng-template #noIcon>
+              <ion-item style="font-size: 20pt" text-center>{{g.label}}</ion-item>
+            </ng-template>
           </ion-segment-button>
         </ion-segment>
       </ion-item>
@@ -63,29 +66,37 @@
 
   </ion-card>
 
-  <ion-card *ngFor="let note of (record | async)?.notes; let i = index" [style.border-radius]="'5px'">
-    <ion-item *ngIf="!note.isImage()">
-      <!-- [style.background-color]="'#ffe0c0'" -->
-      <ion-textarea autoresize placeholder="Notiz" [(ngModel)]="note.text" (input)="note.updateHints($event)"
-        class="sphairas-text" rows="1" [style.resize]="note.text === '' ? 'none' : 'both'">
-      </ion-textarea>
-      <button *ngIf="note.text === ''" ion-button item-right icon-start round color="light" (click)="note.setImage()"
-        class="note-camera-button">
-        <ion-icon name="camera"></ion-icon>
-      </button>
-    </ion-item>
-    <ion-item *ngIf="note.isImage()">
-      <ion-img src="{{note.text}}"></ion-img>
-    </ion-item>
-    <ion-item *ngFor="let hint of note.hints" (click)="note.useHint(hint)">
-      <h2>{{hint}}</h2>
-    </ion-item>
-    <ion-item>
-      <button ion-button item-left icon-start round small color="light" (click)="note.remove()">
-        <ion-icon name="trash"></ion-icon>
-        <label style="padding-left: 5px;">Löschen</label>
-      </button>
-      <span>Zuletzt geändert: {{note.time}}</span>
-    </ion-item>
-  </ion-card>
+  <ng-container *ngIf="_record | async as record">
+    <ion-card *ngFor="let note of record.notes; let i = index" [style.border-radius]="'5px'">
+
+      <ion-item *ngIf="!note.isImage()">
+        <!-- [style.background-color]="'#ffe0c0'" -->
+        <ion-textarea autoresize placeholder="Notiz" [(ngModel)]="note.text" (input)="note.updateHints($event)"
+          class="sphairas-text" rows="1" [style.resize]="note.text === '' ? 'none' : 'both'">
+        </ion-textarea>
+        <button *ngIf="note.text === ''" ion-button item-right icon-start round color="light" (click)="note.setImage()"
+          class="note-camera-button">
+          <ion-icon name="camera"></ion-icon>
+        </button>
+      </ion-item>
+
+      <ion-item *ngIf="note.isImage()">
+        <ion-img src="{{note.text}}"></ion-img>
+      </ion-item>
+
+      <ion-item *ngFor="let hint of note.hints" (click)="note.useHint(hint)">
+        <h2>{{hint}}</h2>
+      </ion-item>
+      
+      <ion-item>
+        <button ion-button item-left icon-start round small color="light" (click)="note.remove()">
+          <ion-icon name="trash"></ion-icon>
+          <label style="padding-left: 5px;">Löschen</label>
+        </button>
+        <span>Zuletzt geändert: {{note.time}}</span>
+      </ion-item>
+
+    </ion-card>
+  </ng-container>
+
 </ion-content>

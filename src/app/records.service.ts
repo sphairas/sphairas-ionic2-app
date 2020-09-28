@@ -1,20 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Grade } from './types/grade';
 import { PouchDBService } from './pouchdb.service';
 import { TimeRecords } from './time-records';
 import { StudentRecordItem } from './types/student-record-item';
-
-export let grades: Grade[] = [
-  new Grade('minus-minus', ' --', true, 'remove-circle'),
-  new Grade('minus', '-', true, 'remove'),
-  new Grade('x', '*', true, 'star-outline'),
-  new Grade('x-plus', '*+', true, 'star'),
-  new Grade('plus', '+', true, 'add'),
-  new Grade('plus-plus', '++', true, 'add-circle'),
-  new Grade('f', 'fehlend', false),
-  new Grade('e', 'entschuldigt', false)
-];
 
 @Injectable({
   providedIn: 'root'

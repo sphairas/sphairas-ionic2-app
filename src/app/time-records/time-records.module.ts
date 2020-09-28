@@ -6,6 +6,7 @@ import { StudentRecordPage } from './student-record.page';
 import { PipesModule } from '../pipes/pipes.module';
 import { RouterModule } from '@angular/router';
 import { RecordsPage } from './records.page';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import { RecordsPage } from './records.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    PipesModule
+    PipesModule,
+    MatIconModule
   ],
   declarations: [StudentRecordPage, RecordsPage]
 })
