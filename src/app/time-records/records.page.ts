@@ -18,7 +18,7 @@ export class RecordsPage implements OnInit {
   _time: Observable<TimeRecords>;
   summary = new FormControl('');
   private summerySubscription: Subscription;
-  private id : string;
+  private id: string;
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService, public conventionsService: ConventionsService) { }
 
@@ -37,7 +37,7 @@ export class RecordsPage implements OnInit {
       )
       .subscribe(value => {
         //console.log("Value entered: " + value);
-        this.service.setTimeJournalText(this.id, value)
+        this.service.setTimeJournalText(this.id, value as string)
           .catch(e => {
             // this._text = this._lastText;
             console.log(e);
