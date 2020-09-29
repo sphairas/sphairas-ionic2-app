@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StudentRecordItem } from '../types/student-record-item';
 import { Observable, Subject } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecordsService } from '../records.service';
 import { Grade } from '../types/grade';
@@ -37,18 +37,17 @@ export class StudentRecordPage implements OnInit { //, OnChanges
   ngOnInit() {
     this.tid = this.activatedRoute.snapshot.paramMap.get('time');
     this.sid = this.activatedRoute.snapshot.paramMap.get('student');
-    this._record = this.service.timeRecord(this.tid)
+    this._record = this.service.timeRecords(this.tid)
       .pipe(
-        take(1),
         tap(t => this._time.next(t)),
         map(t => {
-          t.records.sort((s1, s2) => s1.name.localeCompare(s2.name));
           let i = t.records.findIndex(r => r.student === this.sid)
           let ret = t.records[i];
           if (i + 1 < t.records.length) this.nextStudent = t.records[i + 1].student;
           return ret;
         }),
-        tap(i => { if (i) this.gradeForm.patchValue(i) })
+        tap(i => { if (i) this.gradeForm.patchValue(i) }),
+        shareReplay()
       );
   }
 

@@ -8,6 +8,7 @@ import { Grade } from './types/grade';
 })
 export class ConventionsService {
 
+  //TODO licenses
   readonly icons: any[] = [
     {
       name: "minus",
@@ -152,8 +153,8 @@ export class ConventionsService {
   private resolve(guid: string): { convention: string, id: string } {
     let i = guid.indexOf('#');
     return {
-      convention: i === -1 ? this.defaultConvention : guid.substring(i + 1),
-      id: i === -1 ? guid : guid.substring(0, i)
+      convention: i === -1 ? guid : guid.substring(0, i),
+      id: i === -1 ? this.defaultConvention : guid.substring(i + 1)
     };
   }
 }

@@ -30,7 +30,7 @@
           <h3 title>{{time | timeformat}}, {{time.period}}. Stunde</h3>
         </ng-container>
         <ng-template #loading>Warte...</ng-template>
-        <h2 title>{{(record | async)?.name}}</h2>
+        <h2 title>{{(_record | async)?.name}}</h2>
       </div>
     </ion-card-header>
 

@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{time | timeformat}}, {{time?.period}}. St., {{time?.text}}</ion-title>
+    <ion-title *ngIf="_time | async as time">{{time | timeformat}}, {{time.period}}. St., {{time.text}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,7 +10,8 @@
 
     <ion-item>
       <!-- <ion-label stacked>Thema</ion-label> -->
-      <ion-textarea autoresize placeholder="Thema der Stunde" [formControl]="summary" class="sphairas-text"></ion-textarea>
+      <ion-textarea autoresize placeholder="Thema der Stunde" [formControl]="summary" class="sphairas-text">
+      </ion-textarea>
     </ion-item>
 
     <ion-item-divider class="records-list-header">
@@ -19,14 +20,20 @@
       </ion-label>
     </ion-item-divider>
 
-    <ion-item *ngFor="let record of items | async" (click)="onSelect(record)">
-      <ion-label>
-        <h2>{{record.name}}</h2>
-      </ion-label>
-      <ion-note slot="end">
-        {{record.grade}}
-      </ion-note>
-    </ion-item>
+    <ng-container *ngIf="_time | async as time">
+      <ion-item *ngFor="let student of time.records" (click)="onSelect(student)">
+        <ion-label>
+          <h2>{{student.name}}</h2>
+        </ion-label>
+        <ion-note slot="end" color="secondary">
+          <mat-icon *ngIf="conventionsService.grade(student.grade)?.icon as i; else noIcon" svgIcon="{{i}}"
+            style="max-height: 16px;"></mat-icon>
+          <ng-template #noIcon>
+            <span style="font-size: 1rem; padding-right: 10px;">{{student.value}}</span>
+          </ng-template>
+        </ion-note>
+      </ion-item>
+    </ng-container>
 
   </ion-item-group>
 </ion-content>

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { from, merge, Observable, Subject } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 import { PouchDBService } from './pouchdb.service';
 import { TimeRecords } from './time-records';
 import { StudentRecordItem } from './types/student-record-item';
@@ -9,19 +10,27 @@ import { StudentRecordItem } from './types/student-record-item';
 })
 export class RecordsService {
 
-
   constructor(private db: PouchDBService) {
   }
 
-  timeRecord(recordId: string): Observable<TimeRecords> {
+  timeRecords(recordId: string): Observable<TimeRecords> {
     let k = recordId.substring(4).replace(/\D/g, '');
     let options = {
       include_docs: true,
       attachments: false,
       key: k
     };
-    let ret: Subject<TimeRecords> = new Subject();
-    this.db.query('times/times-times', options)
+    let res: Observable<TimeRecords> = from(this.load(options));
+    let changes: Observable<TimeRecords> = this.db.changes.pipe(
+      filter(c => c.id === recordId),
+      switchMap(() => from(this.load(options))),
+      //startWith(undefined)
+    );
+    return merge(res, changes);
+  }
+
+  private async load(options: any): Promise<TimeRecords> {
+    return this.db.query('times/times-times', options)
       .then(res => {
         //TODO: load cfg:default
         let recs: TimeRecords[] = res.rows.map(r => {
@@ -29,8 +38,7 @@ export class RecordsService {
           if (r.doc) {
             ret.journal = r.doc.journal;
             if (r.doc.records) ret.records = r.doc.records.map(r => {
-              let sr = new StudentRecordItem(r.student);
-              sr.setGrade(r.grade);
+              let sr = new StudentRecordItem(r.student, r.grade);
               sr.timestamp = r.timestamp;
               return sr;
             });
@@ -48,21 +56,22 @@ export class RecordsService {
             ud.value.students.forEach(stud => {
               let sri: StudentRecordItem = tr.records.find(i => i.student === stud.id);
               if (!sri) {
-                sri = new StudentRecordItem(stud.id, stud.name);
+                sri = new StudentRecordItem(stud.id, undefined, stud.name);
                 tr.records.push(sri);
               } else {
                 sri.name = stud.name;
               }
             });
+            tr.records.sort((s1, s2) => s1.name.localeCompare(s2.name));
           }
         });
         return res;
       })
       .then(records => {
-        if (records.length === 1) ret.next(records[0]);
+        //if (records.length === 1) ret.next(records[0]);
+        if (records.length === 1) return records[0];
       })
-      .catch(err => console.log(err));
-    return ret;
+      .catch(err => console.log(err)) as Promise<TimeRecords>;
   }
 
   async setTimeJournalText(id: string, value: string) {

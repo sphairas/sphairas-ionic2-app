@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 //import { ReplaySubject } from 'rxjs/Rx';
 //import * as PouchDB from 'pouchdb';
 import PouchDB from 'pouchdb';
-import { ReplaySubject } from 'rxjs';
-import { AuthService } from './auth.service';
+import { fromEvent, Observable, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
 @Injectable({
@@ -14,10 +14,18 @@ export class PouchDBService {
   public localDB: any;
   private remoteDB: any;
   public readonly eventHandler: ReplaySubject<any> = new ReplaySubject(1);
+  public changes: Observable<any>
   private syncHandler: any;
 
   public constructor() {
     this.localDB = new PouchDB("local", { auto_compaction: true });
+    this.changes = fromEvent(this.localDB.changes({
+      since: 'now',
+      live: true
+    }), 'change')
+      .pipe(
+        map(e => e[0])
+      );
     this.localDB.info()
       .then(function (info) {
         console.info(info);
@@ -84,7 +92,7 @@ export class PouchDBService {
       });
   }
 
-  public async find(doc: string, options?: any) {
+  public async find(doc: string) {
     return this.localDB.get(doc);
   }
 
@@ -93,7 +101,7 @@ export class PouchDBService {
     return this.localDB.query(view, options);
   }
 
-  public async change(doc: string, callback: (doc: any) => void, options?: any) {
+  public async change(doc: string, callback: (doc: any) => void) {
     return this.localDB.get(doc)
       .then(d => {
         callback(d);

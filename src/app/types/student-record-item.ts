@@ -2,13 +2,14 @@ import { RecordNote } from '../times/recordNote';
 
 export class StudentRecordItem {
 
-    grade: string = 'x';
+    public grade: string = undefined;
     present: boolean = true;
     excuse: boolean = false;
     notes: RecordNote[] = [];
     timestamp: number;
 
-    constructor(public readonly student: string, private _name?: string) {
+    constructor(public readonly student: string, public readonly value: string, public name : string = student) {
+        this.setGrade(value);
     }
 
     static evaluate({ grade, present, excuse }: { grade: string; present: boolean; excuse: boolean; }): string {
@@ -18,21 +19,26 @@ export class StudentRecordItem {
         } else return grade;
     }
 
-    setGrade(value: string) {
-        if (value) {
-            this.grade = value;
-            this.present = !(this.grade === 'f' || this.grade === 'e');
+    //value is grade value
+    //grade is undefined if !present or excuse
+    private setGrade(value: string) {
+        if (value === 'f' || value === 'e') {
+            this.present = false;
             this.excuse = this.grade === 'e';
-        }
-        else this.grade = 'x';
+            this.grade = undefined;
+            return;
+        } 
+        this.present = true;
+        this.excuse = false;
+        this.grade = value;
     }
 
-    get name(): string {
-        return this._name || this.student;
-    }
+    // get name(): string {
+    //     return this._name || this.student;
+    // }
 
-    set name(value: string) {
-        this._name = value;
-    }
+    // set name(value: string) {
+    //     this._name = value;
+    // }
 
 }
