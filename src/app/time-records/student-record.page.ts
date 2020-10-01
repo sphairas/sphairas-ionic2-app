@@ -14,6 +14,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { Tag } from '../types/tag';
 import { Note } from '../types/note';
 import { TagsService } from '../services/tags.service';
+import { PhotoService } from '../services/photo.service';
 
 @Component({
   selector: 'app-student-record',
@@ -45,7 +46,7 @@ export class StudentRecordPage implements OnInit { //, OnChanges
   @ViewChild('tagsInput', null) tagsInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto', null) matAutocomplete: MatAutocomplete;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService, private conventionsService: ConventionsService, private tagsService: TagsService) {
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService, private conventionsService: ConventionsService, private tagsService: TagsService, private photoService: PhotoService) {
     this.grades = this.conventionsService.grades();
     this.allHints = this.tagsService.userTags('student-record');
 
@@ -130,7 +131,6 @@ export class StudentRecordPage implements OnInit { //, OnChanges
   addTextNote() {
     let note: Note = { id: "annotated:" + Date.now(), type: 'text', value: '' };
     this.service.addStudentNote(this.tid, this.sid, note)
-      .then(res => this._doc_rev = res.rev)
       .catch(e => console.log(e));
   }
 
@@ -145,7 +145,13 @@ export class StudentRecordPage implements OnInit { //, OnChanges
   }
 
   addImageNote() {
-
+    this.photoService.takeNew()
+      .then(res => {
+        let note: Note = { id: "annotated:" + Date.now(), type: 'image', value: res };
+        this.service.addStudentNote(this.tid, this.sid, note)
+          .catch(e => console.log(e));
+      })
+      .catch(e => console.log(e));
   }
 
   removeNote(note: Note) {
