@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { filter, tap, debounceTime, shareReplay } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { RecordsService } from '../records.service';
-import { TimeRecords } from '../time-records';
+import { TimeRecordsDoc } from '../types/time-records';
 import { ConventionsService } from '../conventions.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { ConventionsService } from '../conventions.service';
 })
 export class RecordsPage implements OnInit {
 
-  _time: Observable<TimeRecords>;
+  _time: Observable<TimeRecordsDoc>;
   summary = new FormControl('');
   private summerySubscription: Subscription;
   private id: string;
@@ -26,7 +26,8 @@ export class RecordsPage implements OnInit {
     this.id = this.activatedRoute.snapshot.paramMap.get('time');
     this._time = this.service.timeRecords(this.id)
       .pipe(
-        tap(t => { if (t.journal) this.summary.patchValue(t.journal.text) }),
+        //filter(Boolean),
+        tap(t => { if (t && t.journal) this.summary.patchValue(t.journal.text) }),
         shareReplay()
       );
 

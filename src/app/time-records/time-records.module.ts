@@ -7,6 +7,11 @@ import { PipesModule } from '../pipes/pipes.module';
 import { RouterModule } from '@angular/router';
 import { RecordsPage } from './records.page';
 import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { RecordNoteComponent } from './record-note.component';
+import { MomentModule } from 'ngx-moment';
 
 @NgModule({
   imports: [
@@ -25,8 +30,16 @@ import { MatIconModule } from '@angular/material/icon';
     ReactiveFormsModule,
     IonicModule,
     PipesModule,
-    MatIconModule
+    MatIconModule,
+    MatFormFieldModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MomentModule
   ],
-  declarations: [StudentRecordPage, RecordsPage]
+  declarations: [
+    StudentRecordPage, 
+    RecordsPage,
+    RecordNoteComponent
+  ]
 })
 export class TimeRecordsModule {}

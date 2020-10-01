@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Time } from '../types/time';
+import { TimeDoc } from '../types/time';
 import { PouchDBService } from '../pouchdb.service';
 import { TimesService } from '../times.service';
 import { Observable } from 'rxjs';
@@ -13,7 +13,7 @@ import { List } from 'immutable';
 })
 export class TimesPage {
 
-  times: Observable<List<Time>>;
+  times: Observable<List<TimeDoc>>;
   start: any;
   end: any;
 

@@ -1,0 +1,28 @@
+<ion-card [style.border-radius]="'5px'">
+
+  <ion-item *ngIf="note.type === 'text'">
+    <!-- (input)="note.updateHints($event)" -->
+    <ion-textarea autoresize placeholder="Notiz" [formControl]="text" class="sphairas-text" rows="1"
+      [style.resize]="note.value === '' ? 'none' : 'both'">
+    </ion-textarea>
+    <!-- <button ion-button item-right icon-start round color="light" (click)="removeNote(note)"
+      class="note-trash-button">
+      <ion-icon slot="icon-only" name="trash"></ion-icon>
+    </button> -->
+  </ion-item>
+
+  <ion-item *ngIf="note.type === 'image'">
+    <ion-img src="{{note.value}}"></ion-img>
+  </ion-item>
+
+  <ion-item>
+    <ion-label style="font-size: 0.9em; font-style: italic;" color="secondary">geändert:
+      {{note.timestamp/1000 | amFromUnix | amLocale: 'de' | amDateFormat: 'D. MMM YY H:mm'}}</ion-label>
+    <ion-buttons slot="end">
+      <ion-button icon-only fill="clear" (click)="remove()">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-item>
+
+</ion-card>

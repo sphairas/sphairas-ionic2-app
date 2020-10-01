@@ -1,11 +1,13 @@
-import { RecordNote } from '../times/recordNote';
+import { Note } from './note';
+import { Tag } from './tag';
 
 export class StudentRecordItem {
 
     public grade: string = undefined;
     present: boolean = true;
     excuse: boolean = false;
-    notes: RecordNote[] = [];
+    tags: Tag[] = [];
+    notes: Note[] = [];
     timestamp: number;
 
     constructor(public readonly student: string, public readonly value: string, public name : string = student) {
@@ -32,13 +34,5 @@ export class StudentRecordItem {
         this.excuse = false;
         this.grade = value;
     }
-
-    // get name(): string {
-    //     return this._name || this.student;
-    // }
-
-    // set name(value: string) {
-    //     this._name = value;
-    // }
 
 }

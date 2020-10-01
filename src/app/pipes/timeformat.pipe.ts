@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Time } from '../types/time';
+import { TimeDoc } from '../types/time';
 import { Moment, utc } from 'moment';
 
 @Pipe({
@@ -7,7 +7,7 @@ import { Moment, utc } from 'moment';
 })
 export class TimeformatPipe implements PipeTransform {
 
-  transform(value: Time): string {
+  transform(value: TimeDoc): string {
     let ref: Moment = utc();
     if (!value || !value.start) return '---';
     let diff: number = value.start.diff(ref, 'second');

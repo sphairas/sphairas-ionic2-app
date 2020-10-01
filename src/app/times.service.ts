@@ -3,14 +3,14 @@ import { List } from 'immutable';
 import { Moment, utc } from 'moment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PouchDBService } from './pouchdb.service';
-import { Time } from './types/time';
+import { TimeDoc } from './types/time';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TimesService {
 
-  private _times: BehaviorSubject<List<Time>> = new BehaviorSubject(List([]));
+  private _times: BehaviorSubject<List<TimeDoc>> = new BehaviorSubject(List([]));
 
   public start: Moment;
   public end: Moment;
@@ -35,7 +35,7 @@ export class TimesService {
     this.loadInitialData();
   }
 
-  get times(): Observable<List<Time>> {
+  get times(): Observable<List<TimeDoc>> {
     return this._times;
   }
 
@@ -52,7 +52,7 @@ export class TimesService {
     let recs: Promise<any> = this.db.query('times/times-times', options)
       .then(res => {
         //TODO: load cfg:default
-        let recs: Time[] = res.rows.map(r => new Time(r.id, r));
+        let recs: TimeDoc[] = res.rows.map(r => new TimeDoc(r.id, r));
 
         //for (let i = 0; i < res.rows.length; i++) {
         // if (id.indexOf('rec:') === 0) {
@@ -85,7 +85,7 @@ export class TimesService {
         return ret;
       });
     Promise.all([recs, units])
-      .then(([records, names]: [List<Time>, any[]]) => {
+      .then(([records, names]: [List<TimeDoc>, any[]]) => {
         records.forEach(r => { if (r.unit) r.text = names[r.unit] });
         this._times.next(List(records));
       })

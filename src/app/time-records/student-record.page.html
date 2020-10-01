@@ -57,46 +57,49 @@
       </ion-item>
     </form>
 
-    <ion-item>
-      <ion-button item-right icon-start round color="light" (click)="addNote()">
-        <ion-icon name="create"></ion-icon>
-        <label style="padding-left: 5px;">Notiz</label>
-      </ion-button>
-    </ion-item>
+  </ion-card>
 
+  <ion-card>
+    <mat-form-field style="width: 100%; padding: 10px;">
+      <mat-chip-list #tagList aria-label="Tags">
+        <mat-chip *ngFor="let tag of tags" removable="true" (removed)="onRemoveTag(tag)">
+          {{tag.label}}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="Tags..." #tagsInput [formControl]="tagsControl" [matAutocomplete]="auto"
+          [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="onAddTag($event)">
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+        <mat-option *ngFor="let hint of filteredHints | async" [value]="hint">
+          {{hint.label}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
   </ion-card>
 
   <ng-container *ngIf="_record | async as record">
-    <ion-card *ngFor="let note of record.notes; let i = index" [style.border-radius]="'5px'">
-
-      <ion-item *ngIf="!note.isImage()">
-        <!-- [style.background-color]="'#ffe0c0'" -->
-        <ion-textarea autoresize placeholder="Notiz" [(ngModel)]="note.text" (input)="note.updateHints($event)"
-          class="sphairas-text" rows="1" [style.resize]="note.text === '' ? 'none' : 'both'">
-        </ion-textarea>
-        <button *ngIf="note.text === ''" ion-button item-right icon-start round color="light" (click)="note.setImage()"
-          class="note-camera-button">
-          <ion-icon name="camera"></ion-icon>
-        </button>
-      </ion-item>
-
-      <ion-item *ngIf="note.isImage()">
-        <ion-img src="{{note.text}}"></ion-img>
-      </ion-item>
-
-      <ion-item *ngFor="let hint of note.hints" (click)="note.useHint(hint)">
-        <h2>{{hint}}</h2>
-      </ion-item>
-      
-      <ion-item>
-        <button ion-button item-left icon-start round small color="light" (click)="note.remove()">
-          <ion-icon name="trash"></ion-icon>
-          <label style="padding-left: 5px;">Löschen</label>
-        </button>
-        <span>Zuletzt geändert: {{note.time}}</span>
-      </ion-item>
-
-    </ion-card>
+    <ng-container *ngFor="let note of record.notes">
+      <record-note [note]="note" (onTextChange)="updateTextNote(note, $event)" (onRemove)="removeNote($event)"></record-note>
+    </ng-container>
   </ng-container>
+
+  <ion-toolbar>
+    <ion-buttons slot="end">
+
+      <ion-button shape="round" (click)="addImageNote()">
+        <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
+      </ion-button>
+
+<!--       <ion-button shape="round" (click)="addVoiceNote()">
+        <ion-icon slot="icon-only" name="recording-outline"></ion-icon>
+      </ion-button> -->
+
+      <ion-button shape="round" (click)="addTextNote()">
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+  </ion-toolbar>
 
 </ion-content>

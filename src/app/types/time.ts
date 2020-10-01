@@ -5,7 +5,7 @@ import { Update } from '../updates.service';
 export type student = { id: string, name: string };
 export const studentFactory: Record.Factory<student> = Record<student>({ id: 'student', name: 'Schülerin/Schüler' })
 
-export class Time {
+export class TimeDoc {
 
     _start: Moment;
     _end: Moment;
@@ -13,7 +13,8 @@ export class Time {
     _location: string;
     _text: string;
     unit: string;
-    update: Update;  
+    update: Update;
+    rev: string;
 
     constructor(public readonly id: string, row?: any) {
         if (row) {
@@ -24,6 +25,7 @@ export class Time {
             this.end = utc(end, "YYYYMMDDHHmm");
             this.period = row.value.period;
             this.location = row.value.location;
+            if(row.doc) this.rev = row.doc._rev;
         }
     }
 
