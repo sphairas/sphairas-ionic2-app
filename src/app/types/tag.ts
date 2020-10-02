@@ -1,5 +1,5 @@
 export interface Tag {
-    id: string;
-    label: string; 
+    value: string;
+    label?: string; 
     timestamp?: number;
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon/';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Grade } from './types/grade';
+import { Tag } from './types/tag';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,7 @@ export class ConventionsService {
     }
   ];
 
-  static readonly conventions: any[] = [
+  static readonly grades: any[] = [
     {
       "grades": [
         {
@@ -103,6 +104,35 @@ export class ConventionsService {
     }
   ];
 
+  static readonly markers: any[] = [
+    {
+      "markers": [
+        {
+          id: "ohne.hausaufgaben",
+          label: "Ohne Hausaufgaben"
+        },
+        {
+          id: "verspaetet",
+          label: "Verspätet"
+        },
+        {
+          id: "hausaufgaben.unvollstaendig",
+          label: "Hausaufgaben unvollständig"
+        },
+        {
+          id: "hausaufgaben.vortrag",
+          label: "Hausaufgaben vorgetragen"
+        },
+        {
+          id: "vortrag",
+          label: "Vortrag/Präsentation"
+        }
+      ],
+      "name": "mitwirkung",
+      "display": "Mitwirkung (Unterricht)"
+    }
+  ];
+
   defaultConvention = 'mitarbeit';
 
   constructor(private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer) {
@@ -116,8 +146,20 @@ export class ConventionsService {
     });
   }
 
+  markers(convention: string) : Tag[] {
+    let cnv = ConventionsService.markers.find(c => c.name === convention);
+    if (cnv) {
+      return cnv.markers.map(m => {
+        let ret: Tag = { ...m };
+        ret.value = cnv.name + '#' + m.id;
+        return ret;
+      });
+    }
+    return undefined;
+  }
+
   grades(convention: string = this.defaultConvention): Grade[] {
-    let cnv = ConventionsService.conventions.find(c => c.name === convention);
+    let cnv = ConventionsService.grades.find(c => c.name === convention);
     if (cnv) {
       return cnv.grades.map(g => {
         let ret: Grade = { ...g };
@@ -132,13 +174,29 @@ export class ConventionsService {
   grade(value: string): Grade {
     if (value) {
       let res = this.resolve(value);
-      let cnv = ConventionsService.conventions.find(c => c.name === res.convention);
+      let cnv = ConventionsService.grades.find(c => c.name === res.convention);
       if (cnv) {
         let g = cnv.grades.find(g => g.id === res.id);
         if (g) {
           let ret: Grade = { ...g };
           ret.value = cnv.name + '#' + g.id;
           if (g.icon) ret.icon = 'grades:' + g.icon;
+          return ret;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  marker(value: string): Tag {
+    if (value) {
+      let res = this.resolve(value);
+      let cnv = ConventionsService.markers.find(c => c.name === res.convention);
+      if (cnv) {
+        let g = cnv.markers.find(g => g.id === res.id);
+        if (g) {
+          let ret: Tag = { ...g };
+          ret.value = cnv.name + '#' + g.id;
           return ret;
         }
       }

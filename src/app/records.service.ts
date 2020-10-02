@@ -6,13 +6,14 @@ import { TimeRecordsDoc } from './types/time-records';
 import { Note } from './types/note';
 import { StudentRecordItem } from './types/student-record-item';
 import { Tag } from './types/tag';
+import { TagsService } from './services/tags.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecordsService {
 
-  constructor(private db: PouchDBService) {
+  constructor(private db: PouchDBService, private tags: TagsService) {
   }
 
   timeRecords(recordId: string): Observable<TimeRecordsDoc> {
@@ -43,6 +44,12 @@ export class RecordsService {
               let sr = new StudentRecordItem(r.student, r.grade);
               sr.timestamp = r.timestamp;
               sr.tags = r.tags || [];
+              sr.tags.forEach(t => {
+                if (!t.label) {
+                  let tag: Tag = this.tags.userTag(t.value)
+                  if (tag) t.label = tag.label;
+                }
+              });
               sr.notes = r.notes || []; //.slice(0);//copies? sr.notes = r.notes is reference
               return sr;
             });
@@ -144,7 +151,7 @@ export class RecordsService {
             let j = 0;
             for (; j < record.tags.length; j++) {
               let tag: Tag = record.tags[j];
-              if (tag.id === id) {
+              if (tag.value === id) {
                 record.tags.splice(j, 1)
                 break;
               }

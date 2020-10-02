@@ -59,18 +59,18 @@
 
   </ion-card>
 
-  <ion-card>
+  <ion-card *ngIf="_record | async as record">
     <mat-form-field style="width: 100%; padding: 10px;">
       <mat-chip-list #tagList aria-label="Tags">
-        <mat-chip *ngFor="let tag of tags" removable="true" (removed)="onRemoveTag(tag)">
-          {{tag.label}}
+        <mat-chip *ngFor="let tag of record.tags" removable="true" (removed)="onRemoveTag(tag)">
+          {{tag.label ? tag.label : tag.id}}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input placeholder="Tags..." #tagsInput [formControl]="tagsControl" [matAutocomplete]="auto"
           [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           (matChipInputTokenEnd)="onAddTag($event)">
       </mat-chip-list>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="labelForTag" (optionSelected)="selected($event)">
         <mat-option *ngFor="let hint of filteredHints | async" [value]="hint">
           {{hint.label}}
         </mat-option>

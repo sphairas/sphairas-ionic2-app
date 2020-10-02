@@ -13,6 +13,7 @@ import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Tag } from '../types/tag';
 import { Note } from '../types/note';
+import { TagsService } from '../services/tags.service';
 
 @Component({
   selector: 'app-student-record',
@@ -29,6 +30,7 @@ export class StudentRecordPage implements OnInit { //, OnChanges
   _doc_rev: string;
 
   grades: Grade[];
+  allHints: Tag[];
 
   gradeForm = new FormGroup({
     present: new FormControl(true),
@@ -38,32 +40,18 @@ export class StudentRecordPage implements OnInit { //, OnChanges
 
   separatorKeysCodes: number[] = [ENTER] //, COMMA];
   tagsControl = new FormControl();
-  tags: Tag[] = [];
-  allHints: Tag[] = [
-    {
-      id: "mitwirkung#ohne.hausaufgaben",
-      label: "Ohne Hausaufgaben"
-    },
-    {
-      id: "vorgaben#hausaufgaben.unvollstaendig",
-      label: "Hausaufgaben unvollständig"
-    },
-    {
-      id: "mitwirkung#verspaetet",
-      label: "Verspätet"
-    }
-  ];
   filteredHints: Observable<Tag[]>;
 
-  @ViewChild('tagsInput', null) fruitInput: ElementRef<HTMLInputElement>;
+  @ViewChild('tagsInput', null) tagsInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto', null) matAutocomplete: MatAutocomplete;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService, private conventionsService: ConventionsService) {
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService, private conventionsService: ConventionsService, private tagsService: TagsService) {
     this.grades = this.conventionsService.grades();
+    this.allHints = this.tagsService.userTags('student-record');
 
     this.filteredHints = this.tagsControl.valueChanges.pipe(
       startWith(null),
-      map((fruit: string | null) => fruit ? this.filter(fruit) : this.allHints.slice()));
+      map((t: string | null) => t ? this.filter(t) : this.allHints.slice()));
   }
 
   ngOnInit() {
@@ -89,6 +77,7 @@ export class StudentRecordPage implements OnInit { //, OnChanges
     let val = this.gradeForm.value as { grade: string; present: boolean; excuse: boolean; };
     let g: string = StudentRecordItem.evaluate(val);
     if (g) this.service.setStudentGrade(this.tid, this.sid, g)
+      .then(res => this._doc_rev = res.rev)
       .catch(e => console.log(e));
   }
 
@@ -97,9 +86,10 @@ export class StudentRecordPage implements OnInit { //, OnChanges
     const value = event.value;
 
     if ((value || '').trim()) {
-      let tag: Tag = { id: "tagged:" + Date.now(), label: value.trim() };
+      let tag: Tag = { value: "tagged:" + Date.now(), label: value.trim() };
       //this.tags.push(tag);
       this.service.addStudentTag(this.tid, this.sid, tag)
+        //.then(res => this._doc_rev = res.rev)
         .catch(e => console.log(e));
     }
 
@@ -110,25 +100,31 @@ export class StudentRecordPage implements OnInit { //, OnChanges
     this.tagsControl.setValue(null);
   }
 
-  onRemoveTag(tag: Tag): void {
-    const index = this.tags.indexOf(tag);
-
-    if (index >= 0) {
-      //this.tags.splice(index, 1);
-      this.service.removeStudentTag(this.tid, this.sid, tag.id)
+  selected(event: MatAutocompleteSelectedEvent): void {
+    let selected: Tag = event.option.value;
+    if (selected) {
+      let tag: Tag = { value: selected.value };
+      //this.tags.push(tag);
+      this.service.addStudentTag(this.tid, this.sid, tag)
+        //.then(res => this._doc_rev = res.rev)
         .catch(e => console.log(e));
     }
+    this.tagsInput.nativeElement.value = '';
+    this.tagsControl.setValue(null);
   }
 
-  selected(event: MatAutocompleteSelectedEvent): void {
-    // this.fruits.push(event.option.viewValue);
-    // this.fruitInput.nativeElement.value = '';
-    // this.fruitCtrl.setValue(null);
+  labelForTag(tag: Tag): string {
+    return tag ? tag.label : '';
   }
 
-  private filter(value: string): Tag[] {
-    let v = value.toLowerCase();
-    return this.allHints.filter(fruit => fruit.label.toLowerCase().indexOf(v) === 0);
+  private filter(value: any): Tag[] {
+    let v = (value instanceof String) ? value.toLowerCase() : '';
+    return this.allHints.filter(h => h.label.toLowerCase().indexOf(v) === 0);
+  }
+
+  onRemoveTag(tag: Tag): void {
+    this.service.removeStudentTag(this.tid, this.sid, tag.value)
+      .catch(e => console.log(e));
   }
 
   addTextNote() {
@@ -144,9 +140,9 @@ export class StudentRecordPage implements OnInit { //, OnChanges
       .catch(e => console.log(e));
   }
 
-  // addVoiceNote() {
+  addVoiceNote() {
 
-  // }
+  }
 
   addImageNote() {
 
