@@ -119,7 +119,7 @@ export class StudentRecordPage implements OnInit { //, OnChanges
   }
 
   private filter(value: any): Tag[] {
-    let v = (value instanceof String) ? value.toLowerCase() : '';
+    let v = (typeof value === 'string') ? value.toLowerCase() : '';
     return this.allHints.filter(h => h.label.toLowerCase().indexOf(v) === 0);
   }
 
