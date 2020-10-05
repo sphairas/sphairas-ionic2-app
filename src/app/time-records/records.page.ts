@@ -19,6 +19,7 @@ export class RecordsPage implements OnInit {
   summary = new FormControl('');
   private summerySubscription: Subscription;
   private id: string;
+  _doc_rev: string;
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router, private service: RecordsService, public conventionsService: ConventionsService) { }
 
@@ -26,6 +27,7 @@ export class RecordsPage implements OnInit {
     this.id = this.activatedRoute.snapshot.paramMap.get('time');
     this._time = this.service.timeRecords(this.id)
       .pipe(
+        filter(t => !this._doc_rev || this._doc_rev !== t.rev),
         //filter(Boolean),
         tap(t => { if (t && t.journal) this.summary.patchValue(t.journal.text) }),
         shareReplay()
@@ -39,6 +41,7 @@ export class RecordsPage implements OnInit {
       .subscribe(value => {
         //console.log("Value entered: " + value);
         this.service.setTimeJournalText(this.id, value as string)
+          .then(res => { if (res.ok) this._doc_rev = res.rev })
           .catch(e => {
             // this._text = this._lastText;
             console.log(e);
